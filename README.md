@@ -1,10 +1,8 @@
-# pelican-mode
+pelican-mode is an Emacs minor mode for editing pages and posts in
+[Pelican] sites.
 
-pelican-mode is a minor mode for editing pages and posts in [Pelican]
-sites. It's intended to be used alongside [markdown-mode] or
-[rst-mode].
-
-It also assumes you've set up Pelican with `pelican-quickstart` or
+It's intended to be used alongside [markdown-mode] or [rst-mode]. It
+also assumes you've set up Pelican with `pelican-quickstart` or
 something like it. In particular it assumes:
 
  * The existence of `pelicanconf.py` and `Makefile` in some ancestor
