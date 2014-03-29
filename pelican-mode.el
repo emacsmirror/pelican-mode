@@ -182,15 +182,15 @@ string or 't to use the current date and time."
 
 (defconst pelican-keymap (make-sparse-keymap)
   "The default keymap used in Pelican mode.")
-(define-key pelican-keymap [?\C-x ?p ?n]
+(define-key pelican-keymap (kbd "C-c P n")
   'pelican-insert-header)
-(define-key pelican-keymap [?\C-x ?p ?p]
+(define-key pelican-keymap (kbd "C-c P p")
   'pelican-publish-draft)
-(define-key pelican-keymap [?\C-x ?p ?t]
+(define-key pelican-keymap (kbd "C-c P t")
   'pelican-update-date)
-(define-key pelican-keymap [?\C-x ?p ?h]
+(define-key pelican-keymap (kbd "C-c P h")
   'pelican-make-html)
-(define-key pelican-keymap [?\C-x ?p ?u]
+(define-key pelican-keymap (kbd "C-c P u")
   'pelican-make-rsync-upload)
 
 (define-minor-mode pelican-mode

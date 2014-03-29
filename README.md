@@ -21,11 +21,11 @@ It also enforces some parts of my preferred Pelican configuration:
 
 ## Quick Guide
 
-* `C-x p n` - Insert a post or page header
-* `C-x p p` - Remove draft status from a post (i.e. publish it)
-* `C-x p t` - Update the date field in a post/page header
-* `C-x p h` - Generate HTML output for a site (equivalent to `make html`)
-* `C-x p u` - Upload a site using rsync (equivalent to `make rsync_upload`)
+* `C-x P n` - Insert a post or page header
+* `C-x P p` - Remove draft status from a post (i.e. publish it)
+* `C-x P t` - Update the date field in a post/page header
+* `C-x P h` - Generate HTML output for a site (equivalent to `make html`)
+* `C-x P u` - Upload a site using rsync (equivalent to `make rsync_upload`)
 
 ## Troubleshooting
 
