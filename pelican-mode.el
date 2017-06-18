@@ -49,12 +49,16 @@
             (t (error "Unsupported major mode %S" major-mode)))
     ""))
 
+(defun pelican-rst-title (title)
+  "Create a ReSt version of TITLE."
+  (concat title "\n" (make-string (string-width title) ?#) "\n\n"))
+
 (defun pelican-title (title)
   "Format a TITLE for the current document, according to major mode."
   (cond ((derived-mode-p 'markdown-mode)
          (pelican-field "title" title))
         ((derived-mode-p 'rst-mode)
-         (concat title "\n" (make-string (string-width title) ?#) "\n"))
+         (pelican-rst-title title))
         (t (error "Unsupported major mode %S" major-mode))))
 
 (defun pelican-header (title date status category tags slug)
@@ -105,6 +109,17 @@
         (replace-match (pelican-field field value))
       (re-search-forward "^$")
       (replace-match (pelican-field field value)))))
+
+(defun pelican-set-title (title)
+  "Set the title to TITLE."
+  (if (pelican-is-markdown)
+      (pelican-set-field "title" title)
+    (save-excursion
+      (goto-char 0)
+      (let ((header (pelican-rst-title title)))
+        (if (looking-at ".*\n#+\n+")
+            (replace-match header)
+          (insert header))))))
 
 (defun pelican-update-date ()
   "Update a Pelican date header."
@@ -207,7 +222,6 @@ to show buffer size and position in mode-line."
   :lighter " Pelican"
   :keymap pelican-keymap
   :group 'pelican)
-
 
 ;;;###autoload
 (add-hook 'markdown-mode-hook 'pelican-enable-if-site)
