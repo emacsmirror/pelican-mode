@@ -1,8 +1,8 @@
 pelican-mode is an Emacs minor mode for editing pages and posts in
-[Pelican] sites.
+[Pelican][] sites.
 
-It's intended to be used alongside [markdown-mode] or [rst-mode]. It
-also assumes you've set up Pelican with `pelican-quickstart` or
+It's intended to be used alongside [markdown-mode][] or [rst-mode][].
+It also assumes you've set up Pelican with `pelican-quickstart` or
 something like it. In particular it assumes:
 
  * The existence of `pelicanconf.py` and `Makefile` in some ancestor
@@ -31,15 +31,16 @@ It also enforces some parts of my preferred Pelican configuration:
 
 If the commands which invoke `make` can find the Makefile but can't
 find `pelican`, your `exec-path` may not be set right. Try out
-[exec-path-from-shell].
+[exec-path-from-shell][].
 
 ## License
 
-This code is released into the public domain via the
-[CC0 Public Domain Dedication][0].
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
 
  [Pelican]: http://getpelican.com/
  [markdown-mode]: http://jblevins.org/projects/markdown-mode/
  [rst-mode]: http://docutils.sourceforge.net/docs/user/emacs.html
  [exec-path-from-shell]: https://github.com/purcell/exec-path-from-shell
- [0]: http://creativecommons.org/publicdomain/zero/1.0/legalcode
