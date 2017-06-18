@@ -103,15 +103,19 @@
 
 (defun pelican-set-field (field value)
   "Set FIELD to VALUE."
+  (interactive "sField: \nsValue: ")
   (save-excursion
     (goto-char 0)
     (if (re-search-forward (concat "^" (pelican-field field ".+*")) nil t)
         (replace-match (pelican-field field value))
+      (re-search-forward "#")
+      (forward-line 2)
       (re-search-forward "^$")
       (replace-match (pelican-field field value)))))
 
 (defun pelican-set-title (title)
   "Set the title to TITLE."
+  (interactive "sTitle: ")
   (if (pelican-is-markdown)
       (pelican-set-field "title" title)
     (save-excursion
