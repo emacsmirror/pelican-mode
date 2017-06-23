@@ -176,11 +176,6 @@
   "Check if this buffer is under a Pelican site."
   (not (null (pelican-find-root))))
 
-(defun pelican-enable-if-site ()
-  "Enable `pelican-mode' if this buffer is under a Pelican site."
-  (when (pelican-is-in-site)
-    (pelican-mode 1)))
-
 (defun pelican-make (target)
   "Execute TARGET in a Makefile at the root of the site."
   (interactive "sMake Pelican target: ")
@@ -226,6 +221,12 @@ to show buffer size and position in mode-line."
   :lighter " Pelican"
   :keymap pelican-keymap
   :group 'pelican)
+
+;;;###autoload
+(defun pelican-enable-if-site ()
+  "Enable `pelican-mode' if this buffer is under a Pelican site."
+  (when (pelican-is-in-site)
+    (pelican-mode 1)))
 
 ;;;###autoload
 (add-hook 'markdown-mode-hook 'pelican-enable-if-site)
