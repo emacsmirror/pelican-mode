@@ -179,12 +179,9 @@
 (defun pelican-make (target)
   "Execute TARGET in a Makefile at the root of the site."
   (interactive "sMake Pelican target: ")
-  (if-let ((default-directory (pelican-find-root)))
-      (let ((output (get-buffer-create "*Pelican Output*")))
-        (display-buffer output)
-        (pop-to-buffer output)
-        (compilation-mode)
-        (start-process "Pelican Makefile" output "make" target))
+  (if-let (default-directory (pelican-find-root))
+      (compilation-start (format "make %s" target)
+                         nil (lambda (_) "*pelican*"))
     (message "This doesn't look like a Pelican site.")))
 
 (defun pelican-make-html ()
