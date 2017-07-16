@@ -216,7 +216,7 @@
   "Toggle Pelican mode.
 
 Interactively with no argument, this command toggles the mode.
-to show buffer size and position in mode-line."
+for editing Pelican site files."
   :init-value nil
   :lighter " Pelican"
   :keymap pelican-keymap
