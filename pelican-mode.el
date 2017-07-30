@@ -125,12 +125,18 @@ the unquoted printed representation of it is used:
   (interactive "sField: \nsValue: ")
   (save-excursion
     (goto-char 0)
+    (when (and (derived-mode-p 'rst-mode)
+               (re-search-forward "^#" nil t))
+      (forward-line 2))
     (if (re-search-forward (concat "^" (pelican-field field ".+*")) nil t)
         (replace-match (pelican-field field value))
-      (re-search-forward "#")
-      (forward-line 2)
-      (re-search-forward "^$")
-      (replace-match (pelican-field field value)))))
+      (when value
+        (re-search-forward "^$")
+        (replace-match (pelican-field field value))))))
+
+(defun pelican-remove-field (field)
+  "Remove FIELD."
+  (pelican-set-field field nil))
 
 (defun pelican-set-title (title)
   "Set the title to TITLE."
