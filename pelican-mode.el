@@ -213,30 +213,19 @@ the unquoted printed representation of it is used:
   (interactive)
   (pelican-make "rsync_upload"))
 
-(defconst pelican-keymap (make-sparse-keymap)
-  "The default keymap used in Pelican mode.")
-(define-key pelican-keymap (kbd "C-c P n")
-  'pelican-insert-auto-header)
-(define-key pelican-keymap (kbd "C-c P p")
-  'pelican-publish-draft)
-(define-key pelican-keymap (kbd "C-c P t")
-  'pelican-update-date)
-(define-key pelican-keymap (kbd "C-c P h")
-  'pelican-make-html)
-(define-key pelican-keymap (kbd "C-c P u")
-  'pelican-make-rsync-upload)
-
-
 ;;;###autoload
 (define-minor-mode pelican-mode
   "Toggle Pelican mode.
 
 Interactively with no argument, this command toggles the mode.
 for editing Pelican site files."
-  :init-value nil
   :lighter " Pelican"
-  :keymap pelican-keymap
-  :group 'pelican)
+  :group 'pelican
+  :keymap `((,(kbd "C-c P n") . pelican-insert-auto-header)
+            (,(kbd "C-c P p") . pelican-publish-draft)
+            (,(kbd "C-c P t") . pelican-update-date)
+            (,(kbd "C-c P h") . pelican-make-html)
+            (,(kbd "C-c P u") . pelican-make-rsync-upload)))
 
 ;;;###autoload
 (defun pelican-enable-if-site ()
