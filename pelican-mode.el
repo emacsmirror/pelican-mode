@@ -51,10 +51,12 @@ the unquoted printed representation of it is used:
 - `slug' means the file's path relative to the document root sans
   extension; see `pelican-default-slug'.
 
-- nil means return an empty string, without any name or value."
+- nil or an empty strings means return an empty string, without
+  any name or value."
   (setq value (pcase value
                 ('now (pelican-timestamp))
                 ('slug (pelican-default-slug))
+                ('"" nil)
                 (_ value)))
   (when (symbolp name)
     (setq name (string-remove-prefix ":" (symbol-name name))))
