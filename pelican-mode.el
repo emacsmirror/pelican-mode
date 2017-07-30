@@ -32,6 +32,27 @@
 (require 'seq)
 (require 'subr-x)
 
+(defgroup pelican-mode nil
+  "Support for Pelican posts and pages."
+  :group 'convenience)
+
+(defcustom pelican-mode-default-page-fields
+  '(:slug slug)
+  "Fields to include when creating a new page.
+
+See the documentation for `pelican-field' for more information
+about metadata fields and special values."
+  :group 'pelican-mode
+  :type '(plist))
+
+(defcustom pelican-mode-default-post-fields
+  '(:date now :status "draft" :slug slug)
+  "Fields to include when creating a new post.
+
+See the documentation for `pelican-field' for more information
+about metadata fields and special values."
+  :group 'pelican-mode
+  :type '(plist))
 
 (defun pelican-timestamp (&optional time)
   "Generate a Pelican-compatible timestamp for TIME."
@@ -69,7 +90,7 @@ the unquoted printed representation of it is used:
     ""))
 
 (defun pelican-rst-title (title)
-  "Create a ReSt version of TITLE."
+  "Format a reStructureText version of TITLE."
   (concat title "\n" (make-string (string-width title) ?#) "\n\n"))
 
 (defun pelican-title (title)
@@ -96,31 +117,25 @@ the unquoted printed representation of it is used:
 (defun pelican-insert-draft-post-header (title tags)
   "Insert a Pelican header for a draft with a TITLE and TAGS."
   (interactive "sPost title: \nsTags: ")
-  (save-excursion
-    (goto-char 0)
-    (insert (pelican-header title
-                            :date 'now
-                            :status "draft"
-                            :tags tags
-                            :slug 'slug))))
+  (apply #'pelican-insert-header
+         `(,title ,@pelican-mode-default-post-fields :tags ,tags)))
 
 (defun pelican-insert-page-header (title &optional hidden)
   "Insert a Pelican header for a page with a TITLE, potentially HIDDEN."
   (interactive
    (list (read-string "Page title: ")
          (y-or-n-p "Hidden? ")))
-  (save-excursion
-    (goto-char 0)
-    (insert (pelican-header title
-                            :status (when hidden "hidden")
-                            :slug 'slug))))
+  (apply #'pelican-insert-header
+         `(,title ,@pelican-mode-default-page-fields
+                  :hidden ,(when hidden "hidden"))))
 
 (defun pelican-insert-auto-header ()
   "Insert a Pelican header for a page or post."
   (interactive)
-  (call-interactively (if (pelican-page-p)
-                          'pelican-insert-page-header
-                        'pelican-insert-draft-post-header)))
+  (call-interactively
+   (if (pelican-page-p)
+       #'pelican-insert-page-header
+     #'pelican-insert-draft-post-header)))
 
 (defun pelican-set-field (field value)
   "Set FIELD to VALUE."
