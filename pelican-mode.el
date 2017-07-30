@@ -116,7 +116,7 @@ the unquoted printed representation of it is used:
 (defun pelican-insert-auto-header ()
   "Insert a Pelican header for a page or post."
   (interactive)
-  (call-interactively (if (pelican-is-page)
+  (call-interactively (if (pelican-page-p)
                           'pelican-insert-page-header
                         'pelican-insert-draft-post-header)))
 
@@ -155,7 +155,7 @@ the unquoted printed representation of it is used:
   (pelican-set-field "status" nil)
   (pelican-update-date))
 
-(defun pelican-is-page ()
+(defun pelican-page-p ()
   "Guess the current buffer is a Pelican page (vs. a post or neither)."
   (when-let (pelican-base (pelican-find-root))
     (let* ((relative (file-relative-name buffer-file-name pelican-base))
@@ -191,7 +191,7 @@ the unquoted printed representation of it is used:
   (when-let (conf (pelican-find-in-parents "pelicanconf.py"))
     (file-name-directory conf)))
 
-(defun pelican-is-in-site ()
+(defun pelican-site-p ()
   "Check if this buffer is under a Pelican site."
   (not (null (pelican-find-root))))
 
@@ -230,7 +230,7 @@ for editing Pelican site files."
 ;;;###autoload
 (defun pelican-enable-if-site ()
   "Enable `pelican-mode' if this buffer is under a Pelican site."
-  (when (pelican-is-in-site)
+  (when (pelican-site-p)
     (pelican-mode 1)))
 
 ;;;###autoload
