@@ -12,12 +12,6 @@ something like it. In particular it assumes:
  * If the next component is `pages`, that indicates a static page
    rather than a dated post.
    
-It also enforces some parts of my preferred Pelican configuration:
-
- * Categories are never provided (you can have one if you want, but
-   the default interactive commands don't provide one).
- * Tags are always provided.
- * Slugs are explicit, and include nested subdirectories.
 
 ## Quick Guide
 
@@ -27,11 +21,13 @@ It also enforces some parts of my preferred Pelican configuration:
 * `C-c P h` - Generate HTML output for a site (equivalent to `make html`)
 * `C-c P u` - Upload a site using rsync (equivalent to `make rsync_upload`)
 
+
 ## Troubleshooting
 
 If the commands which invoke `make` can find the Makefile but can't
 find `pelican`, your `exec-path` may not be set right. Try out
 [exec-path-from-shell][].
+
 
 ## License
 
