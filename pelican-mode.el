@@ -29,18 +29,35 @@
 
 ;;; Code:
 
+(require 'seq)
 (require 'subr-x)
+
 
 (defun pelican-timestamp (&optional time)
   "Generate a Pelican-compatible timestamp for TIME."
   (format-time-string "%Y-%m-%d %H:%M" time))
 
-(defun pelican-is-markdown ()
-  "Check if the buffer is likely using Markdown."
-  (derived-mode-p 'markdown-mode))
-
 (defun pelican-field (name value)
-  "Format a line for a field NAME with a VALUE."
+  "Format a line for a field NAME with a VALUE.
+
+NAME may be a string or a symbol; if it is a symbol, the
+symbol name is used (removing a leading ':' if present).
+
+VALUE may be any value; except for the following special values,
+the unquoted printed representation of it is used:
+
+- `now' means the current time; see `pelican-timestamp'.
+
+- `slug' means the file's path relative to the document root sans
+  extension; see `pelican-default-slug'.
+
+- nil means return an empty string, without any name or value."
+  (setq value (pcase value
+                ('now (pelican-timestamp))
+                ('slug (pelican-default-slug))
+                (_ value)))
+  (when (symbolp name)
+    (setq name (string-remove-prefix ":" (symbol-name name))))
   (if value
       (cond ((derived-mode-p 'markdown-mode)
              (format "%s: %s\n" (capitalize name) value))
@@ -61,40 +78,42 @@
          (pelican-rst-title title))
         (t (error "Unsupported major mode %S" major-mode))))
 
-(defun pelican-header (title date status category tags slug)
-  "Create a Pelican header."
-  ;; TODO: Use a property list (-> alist via seq-partition) instead.
-  (when (eq date t)
-    (setq date (pelican-timestamp)))
-  
+(defun pelican-header (title &rest fields)
+  "Generate a Pelican header for a post with a TITLE and metadata FIELDS."
   (concat (pelican-title title)
-          (pelican-field "date" date)
-          (pelican-field "status" status)
-          (pelican-field "tags" tags)
-          (pelican-field "category" category)
-          (pelican-field "slug" slug)
+          (mapconcat (apply-partially #'apply #'pelican-field)
+                     (seq-partition fields 2) "")
           "\n"))
 
-(defun pelican-insert-draft-post-header (title tags)
-  "Insert a Pelican header for a draft post."
-  (interactive "sPost title: \nsTags: ")
-  (let ((slug (pelican-default-slug)))
-    (save-excursion
-      (goto-char 0)
-      (insert (pelican-header title 't "draft" nil tags slug)))))
+(defun pelican-insert-header (title &rest fields)
+  "Insert a Pelican header for a post with a TITLE and metadata FIELDS."
+  (save-excursion
+    (goto-char 0)
+    (insert (apply #'pelican-header (cons title fields)))))
 
-(defun pelican-insert-page-header (title hidden)
-  "Insert a Pelican header for a page."
+(defun pelican-insert-draft-post-header (title tags)
+  "Insert a Pelican header for a draft with a TITLE and TAGS."
+  (interactive "sPost title: \nsTags: ")
+  (save-excursion
+    (goto-char 0)
+    (insert (pelican-header title
+                            :date 'now
+                            :status "draft"
+                            :tags tags
+                            :slug 'slug))))
+
+(defun pelican-insert-page-header (title &optional hidden)
+  "Insert a Pelican header for a page with a TITLE, potentially HIDDEN."
   (interactive
    (list (read-string "Page title: ")
          (y-or-n-p "Hidden? ")))
-  (let ((slug (pelican-default-slug))
-        (hidden (if hidden "hidden" nil)))
-    (save-excursion
-      (goto-char 0)
-      (insert (pelican-header title nil hidden nil nil slug)))))
+  (save-excursion
+    (goto-char 0)
+    (insert (pelican-header title
+                            :status (when hidden "hidden")
+                            :slug 'slug))))
 
-(defun pelican-insert-header ()
+(defun pelican-insert-auto-header ()
   "Insert a Pelican header for a page or post."
   (interactive)
   (call-interactively (if (pelican-is-page)
@@ -116,7 +135,7 @@
 (defun pelican-set-title (title)
   "Set the title to TITLE."
   (interactive "sTitle: ")
-  (if (pelican-is-markdown)
+  (if (derived-mode-p 'markdown-mode)
       (pelican-set-field "title" title)
     (save-excursion
       (goto-char 0)
@@ -197,7 +216,7 @@
 (defconst pelican-keymap (make-sparse-keymap)
   "The default keymap used in Pelican mode.")
 (define-key pelican-keymap (kbd "C-c P n")
-  'pelican-insert-header)
+  'pelican-insert-auto-header)
 (define-key pelican-keymap (kbd "C-c P p")
   'pelican-publish-draft)
 (define-key pelican-keymap (kbd "C-c P t")
