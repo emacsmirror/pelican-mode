@@ -224,7 +224,7 @@ the unquoted printed representation of it is used:
   (if-let (default-directory (pelican-find-root))
       (compilation-start (format "make %s" target)
                          nil (lambda (_) "*pelican*"))
-    (message "This doesn't look like a Pelican site.")))
+    (user-error "This doesn't look like a Pelican site")))
 
 (defun pelican-make-html ()
   "Generate HTML via a Makefile at the root of the site."
