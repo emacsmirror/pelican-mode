@@ -153,12 +153,12 @@ the unquoted printed representation of it is used:
 (defun pelican-update-date ()
   "Update a Pelican date header."
   (interactive)
-  (pelican-set-field "date" (pelican-timestamp)))
+  (pelican-set-field :date 'now))
 
 (defun pelican-publish-draft ()
   "Remove draft status from a Pelican post."
   (interactive)
-  (pelican-set-field "status" nil)
+  (pelican-remove-field :status)
   (pelican-update-date))
 
 (defun pelican-page-p ()
