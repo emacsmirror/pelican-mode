@@ -244,7 +244,6 @@ for editing articles or pages:
 
 \\{pelican-mode-map}"
   :lighter " Pelican"
-  :group 'pelican
   :keymap `((,(kbd "C-c P n") . pelican-mode-insert-auto-header)
             (,(kbd "C-c P p") . pelican-mode-publish-draft)
             (,(kbd "C-c P t") . pelican-mode-update-date)
@@ -252,16 +251,30 @@ for editing articles or pages:
             (,(kbd "C-c P u") . pelican-make-rsync-upload)))
 
 ;;;###autoload
+(define-minor-mode pelican-global-mode
+  "Toggle Pelican global mode.
+With a prefix argument ARG, enable Pelican global mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+When Pelican global mode is enabled, text files which seem to
+be part of a Pelican site will have `pelican-mode' automatically
+enabled.
+
+If you disable this, you may still enable `pelican-mode' manually
+or add `pelican-mode-enable-if-site' to more specific mode
+hooks."
+  :global t
+  :group 'pelican
+  (if pelican-global-mode
+      (add-hook 'text-mode-hook #'pelican-mode-enable-if-site)
+    (remove-hook 'text-mode-hook #'pelican-mode-enable-if-site)))
+
+;;;###autoload
 (defun pelican-mode-enable-if-site ()
   "Enable `pelican-mode' if this buffer is part of a Pelican site."
-  (when (not (null (pelican-mode-find-root)))
+  (when (pelican-mode-find-root)
     (pelican-mode 1)))
-
-;;;###autoload
-(add-hook 'markdown-mode-hook 'pelican-mode-enable-if-site)
-
-;;;###autoload
-(add-hook 'rst-mode-hook 'pelican-mode-enable-if-site)
 
 (provide 'pelican-mode)
 ;;; pelican-mode.el ends here
