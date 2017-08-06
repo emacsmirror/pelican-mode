@@ -40,7 +40,7 @@
   '(:slug slug)
   "Fields to include when creating a new page.
 
-See the documentation for `pelican-mode-field' for more information
+See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
   :group 'pelican
   :type '(plist))
@@ -49,7 +49,7 @@ about metadata fields and special values."
   '(:date now :status "draft" :slug slug)
   "Fields to include when creating a new article.
 
-See the documentation for `pelican-mode-field' for more information
+See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
   :group 'pelican
   :type '(plist))
@@ -58,67 +58,16 @@ about metadata fields and special values."
   "Generate a pelican-mode-compatible timestamp for TIME."
   (format-time-string "%Y-%m-%d %H:%M" time))
 
-(defun pelican-mode-field (name value)
-  "Format a line for a field NAME with a VALUE.
-
-NAME may be a string or a symbol; if it is a symbol, the
-symbol name is used (removing a leading ':' if present).
-
-VALUE may be any value; except for the following special values,
-the unquoted printed representation of it is used:
-
-- `now' means the current time; see `pelican-mode-timestamp'.
-
-- `slug' means the file's path relative to the document root sans
-  extension; see `pelican-mode-default-slug'.
-
-- nil or an empty strings means return an empty string, without
-  any name or value."
-  (setq value (pcase value
-                ('now (pelican-mode-timestamp))
-                ('slug (pelican-mode-default-slug))
-                ('"" nil)
-                (_ value)))
-  (when (symbolp name)
-    (setq name (string-remove-prefix ":" (symbol-name name))))
-  (if value
-      (cond ((derived-mode-p 'markdown-mode)
-             (format "%s: %s\n" (capitalize name) value))
-            ((derived-mode-p 'rst-mode)
-             (format ":%s: %s\n" (downcase name) value))
-            (t (error "Unsupported major mode %S" major-mode)))
-    ""))
-
-(defun pelican-mode-rst-title (title)
-  "Format a reStructureText version of TITLE."
-  (concat title "\n" (make-string (string-width title) ?#) "\n\n"))
-
-(defun pelican-mode-title (title)
-  "Format a TITLE for the current document, according to major mode."
-  (cond ((derived-mode-p 'markdown-mode)
-         (pelican-mode-field "title" title))
-        ((derived-mode-p 'rst-mode)
-         (pelican-mode-rst-title title))
-        (t (error "Unsupported major mode %S" major-mode))))
-
-(defun pelican-mode-header (title &rest fields)
-  "Generate a Pelican header for an article with a TITLE and metadata FIELDS."
-  (concat (pelican-mode-title title)
-          (mapconcat (apply-partially #'apply #'pelican-mode-field)
-                     (seq-partition fields 2) "")
-          "\n"))
-
-(defun pelican-mode-insert-header (title &rest fields)
-  "Insert a Pelican header for an article with a TITLE and metadata FIELDS."
-  (save-excursion
-    (goto-char 0)
-    (insert (apply #'pelican-mode-header (cons title fields)))))
+(defun pelican-mode-insert-header (&rest fields)
+  "Insert a Pelican header for an article with metadata FIELDS."
+  (mapc (apply-partially #'apply #'pelican-mode-set-field)
+        (seq-partition fields 2)))
 
 (defun pelican-mode-insert-draft-article-header (title tags)
   "Insert a Pelican header for a draft with a TITLE and TAGS."
   (interactive "sArticle title: \nsTags: ")
   (apply #'pelican-mode-insert-header
-         `(,title ,@pelican-mode-default-article-fields :tags ,tags)))
+         `(:title ,title ,@pelican-mode-default-article-fields :tags ,tags)))
 
 (defun pelican-mode-insert-page-header (title &optional hidden)
   "Insert a Pelican header for a page with a TITLE, potentially HIDDEN."
@@ -126,7 +75,7 @@ the unquoted printed representation of it is used:
    (list (read-string "Page title: ")
          (y-or-n-p "Hidden? ")))
   (apply #'pelican-mode-insert-header
-         `(,title ,@pelican-mode-default-page-fields
+         `(:title ,title ,@pelican-mode-default-page-fields
                   :hidden ,(when hidden "hidden"))))
 
 (defun pelican-mode-insert-auto-header ()
@@ -137,19 +86,64 @@ the unquoted printed representation of it is used:
        #'pelican-mode-insert-page-header
      #'pelican-mode-insert-draft-article-header)))
 
-(defun pelican-mode-set-field (field value)
-  "Set FIELD to VALUE."
-  (interactive "sField: \nsValue: ")
-  (save-excursion
-    (goto-char 0)
-    (when (and (derived-mode-p 'rst-mode)
-               (re-search-forward "^#" nil t))
-      (forward-line 2))
-    (if (re-search-forward (concat "^" (pelican-mode-field field ".+*")) nil t)
-        (replace-match (pelican-mode-field field value))
+(defun pelican-mode-set-field/rst-mode (field value)
+  "Set reStructuredText metadata FIELD to VALUE."
+  (setq field (downcase field))
+  (if (equal field "title")
+      (let ((header (format "%s\n%s\n\n"
+                            value (make-string (string-width value) ?#))))
+        (if (looking-at ".*\n#+\n+")
+            (replace-match header)
+          (insert header)))
+    (let ((text (when value (format ":%s: %s\n" field value))))
+      (when (re-search-forward "^#" nil t)
+        (forward-line 2))
+      (if (re-search-forward (format "^:%s:.*\n" (regexp-quote field)) nil t)
+          (replace-match (or text ""))
+        (when text
+          (re-search-forward "^$")
+          (replace-match text))))))
+
+(defun pelican-mode-set-field/markdown-mode (field value)
+  "Set Markdown metadata FIELD to VALUE."
+  (setq field (capitalize field))
+  (let ((text (when value (format "%s: %s\n" field value))))
+    (if (re-search-forward (format "^%s:.*\n" (regexp-quote field)) nil t)
+        (replace-match text)
       (when value
         (re-search-forward "^$")
-        (replace-match (pelican-mode-field field value))))))
+        (replace-match  text)))))
+
+(defun pelican-mode-set-field (field value)
+  "Set FIELD to VALUE.
+
+FIELD may be a string or a symbol; if it is a symbol, the
+symbol name is used (removing a leading ':' if present).
+
+VALUE may be any value; except for the following special values,
+the unquoted printed representation of it is used:
+
+- `now' means the current time; see `pelican-mode-timestamp'.
+
+- `slug' means the file's path relative to the document root sans
+  extension; see `pelican-mode-default-slug'.
+
+- nil or an empty string removes the field."
+  (interactive "sField: \nsValue: ")
+  (setq value (pcase value
+                ('now (pelican-mode-timestamp))
+                ('slug (pelican-mode-default-slug))
+                ('"" nil)
+                (_ value)))
+  (when (symbolp field)
+    (setq field (string-remove-prefix ":" (symbol-name field))))
+  (save-excursion
+    (goto-char 0)
+    (cond ((derived-mode-p 'markdown-mode)
+           (pelican-mode-set-field/markdown-mode field value))
+          ((derived-mode-p 'rst-mode)
+           (pelican-mode-set-field/rst-mode field value))
+          (t (error "Unsupported major mode %S" major-mode)))))
 
 (defun pelican-mode-remove-field (field)
   "Remove FIELD."
@@ -158,14 +152,7 @@ the unquoted printed representation of it is used:
 (defun pelican-mode-set-title (title)
   "Set the title to TITLE."
   (interactive "sTitle: ")
-  (if (derived-mode-p 'markdown-mode)
-      (pelican-mode-set-field "title" title)
-    (save-excursion
-      (goto-char 0)
-      (let ((header (pelican-mode-rst-title title)))
-        (if (looking-at ".*\n#+\n+")
-            (replace-match header)
-          (insert header))))))
+  (pelican-mode-set-field :title title))
 
 (defun pelican-mode-update-date ()
   "Update a Pelican date header."
