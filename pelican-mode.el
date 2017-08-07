@@ -82,7 +82,7 @@ for editing articles or pages:
             (,(kbd "C-c P f") . pelican-set-field)
             (,(kbd "C-c P h") . pelican-make-html)
             (,(kbd "C-c P n") . pelican-mode-insert-header)
-            (,(kbd "C-c P p") . pelican-mode-publish-draft)
+            (,(kbd "C-c P p") . pelican-mode-publish)
             (,(kbd "C-c P u") . pelican-make-rsync-upload)))
 
 ;;;###autoload
@@ -215,19 +215,22 @@ than the modification date."
   (interactive "P")
   (pelican-mode-set-field (if original :date :modified) 'now))
 
-(defun pelican-mode-publish-draft ()
-  "Remove draft status from a Pelican article."
+(defun pelican-mode-publish ()
+  "Remove draft or hidden status from a Pelican article."
   (interactive)
   (pelican-mode-remove-field :status)
   (pelican-mode-update-date :date))
 
-(defun pelican-mode-insert-draft-article-header (title tags)
-  "Insert a Pelican header for a draft with a TITLE and TAGS."
+(defun pelican-mode-insert-article-header (title tags)
+  "Insert a Pelican header for an article with a TITLE and TAGS."
   (interactive "sArticle title: \nsTags: ")
-  (apply #'pelican-mode-set-fields
-         `(:title ,title
-           ,@pelican-mode-default-article-fields
-           :tags ,tags)))
+  (save-excursion
+    (goto-char 0)
+    (insert "\n")
+    (apply #'pelican-mode-set-fields
+           `(:title ,title
+             ,@pelican-mode-default-article-fields
+             :tags ,tags))))
 
 (defun pelican-mode-insert-page-header (title &optional hidden)
   "Insert a Pelican header for a page with a TITLE.
@@ -235,10 +238,13 @@ than the modification date."
 If HIDDEN is non-nil, the page is marked hidden; otherwise it
 has no status."
   (interactive "sPage title: \nP")
-  (apply #'pelican-mode-set-fields
-         (append
-          (list :title title :status (when hidden "hidden"))
-          pelican-mode-default-page-fields)))
+  (save-excursion
+    (goto-char 0)
+    (insert "\n")
+    (apply #'pelican-mode-set-fields
+           (append
+            (list :title title :status (when hidden "hidden"))
+            pelican-mode-default-page-fields))))
 
 (defun pelican-mode-insert-header ()
   "Insert a Pelican header for a page or article."
@@ -246,7 +252,7 @@ has no status."
   (call-interactively
    (if (pelican-mode-page-p)
        #'pelican-mode-insert-page-header
-     #'pelican-mode-insert-draft-article-header)))
+     #'pelican-mode-insert-article-header)))
 
 (defun pelican-make (target)
   "Execute TARGET in a Makefile at the root of the site."
