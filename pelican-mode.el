@@ -72,6 +72,7 @@ about metadata fields and special values."
 (defcustom pelican-mode-formats
   '((markdown-mode . pelican-mode-set-field-markdown-mode)
     (adoc-mode . pelican-mode-set-field-adoc-mode)
+    (org-mode . pelican-mode-set-field-org-mode)
     (rst-mode . pelican-mode-set-field-rst-mode))
   "Functions to handle setting metadata, based on major mode.
 
@@ -160,21 +161,43 @@ arguments, field and value strings."
               (replace-match text)
             (insert text)))))))
 
+(defun pelican-mode-set-field-org-mode (field value)
+  "Set Org global metadata FIELD to VALUE."
+  ;; None of org-mode's functions I can find for setting properties
+  ;; operate on the global list, only a single property drawer.
+  (setq field (upcase field))
+  (setq field
+        (format (if (member field '("TITLE" "DATE" "CATEGORY" "AUTHOR"))
+                    "#+%s:"
+                  "#+PROPERTY: %s")
+                field))
+  (let ((text (when value (format "%s %s\n" field value))))
+    (if (re-search-forward (format "^%s .*\n" (regexp-quote field)) nil t)
+        (replace-match (or text ""))
+      (when text
+        (if (re-search-forward "^$" nil t)
+            (replace-match text)
+          (insert text))))))
+
 (defun pelican-mode-set-field (field value)
   "Set FIELD to VALUE.
 
 FIELD may be a string or a symbol; if it is a symbol, the
 symbol name is used (removing a leading ':' if present).
 
-VALUE may be any value; except for the following special values,
-the unquoted printed representation of it is used:
+When called from Lisp, VALUE may be any value; except for the
+following special values, the unquoted printed representation of
+it is used:
 
 - `now' means the current time; see `pelican-mode-timestamp'.
 
 - `slug' means the file's path relative to the document root sans
   extension; see `pelican-mode-default-slug'.
 
-- nil or an empty string removes the field."
+- nil or an empty string removes the field.
+
+The buffer must be in a format listed in `pelican-mode-formats'
+for this function to work correctly."
   (interactive "sField: \nsValue: ")
   (setq value (pcase value
                 ('now (pelican-mode-timestamp))
@@ -272,6 +295,7 @@ for editing articles or pages:
             (,(kbd "C-c P p") . pelican-mode-publish-draft)
             (,(kbd "C-c P t") . pelican-mode-update-date)
             (,(kbd "C-c P h") . pelican-make-html)
+            (,(kbd "C-c P f") . pelican-set-field)
             (,(kbd "C-c P u") . pelican-make-rsync-upload)))
 
 ;;;###autoload
