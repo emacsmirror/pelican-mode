@@ -11,7 +11,7 @@ something like it. In particular it assumes:
    ancestor is irrelevant.
  * If the next component is `pages`, that indicates a static page
    rather than a dated post.
-   
+
 
 ## Quick Guide
 
