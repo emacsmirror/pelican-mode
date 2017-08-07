@@ -54,6 +54,16 @@ about metadata fields and special values."
   :group 'pelican
   :type '(plist))
 
+(defcustom pelican-mode-set-field-alist
+  '((markdown-mode . pelican-mode-set-field-markdown-mode)
+    (rst-mode . pelican-mode-set-field-rst-mode))
+  "Functions to handle setting metadata, based on major mode.
+
+This association list maps modes to functions that take two
+arguments, field and value strings."
+  :group 'pelican
+  :type '(alist :key-type function :value-type function))
+
 (defun pelican-mode-timestamp (&optional time)
   "Generate a pelican-mode-compatible timestamp for TIME."
   (format-time-string "%Y-%m-%d %H:%M" time))
@@ -86,7 +96,7 @@ about metadata fields and special values."
        #'pelican-mode-insert-page-header
      #'pelican-mode-insert-draft-article-header)))
 
-(defun pelican-mode-set-field/rst-mode (field value)
+(defun pelican-mode-set-field-rst-mode (field value)
   "Set reStructuredText metadata FIELD to VALUE."
   (setq field (downcase field))
   (if (equal field "title")
@@ -104,7 +114,7 @@ about metadata fields and special values."
           (re-search-forward "^$")
           (replace-match text))))))
 
-(defun pelican-mode-set-field/markdown-mode (field value)
+(defun pelican-mode-set-field-markdown-mode (field value)
   "Set Markdown metadata FIELD to VALUE."
   (setq field (capitalize field))
   (let ((text (when value (format "%s: %s\n" field value))))
@@ -137,13 +147,13 @@ the unquoted printed representation of it is used:
                 (_ value)))
   (when (symbolp field)
     (setq field (string-remove-prefix ":" (symbol-name field))))
-  (save-excursion
-    (goto-char 0)
-    (cond ((derived-mode-p 'markdown-mode)
-           (pelican-mode-set-field/markdown-mode field value))
-          ((derived-mode-p 'rst-mode)
-           (pelican-mode-set-field/rst-mode field value))
-          (t (error "Unsupported major mode %S" major-mode)))))
+  (let ((set-field
+         (assoc-default nil pelican-mode-set-field-alist #'derived-mode-p)))
+    (unless set-field
+      (error "Unsupported major mode %S" major-mode))
+    (save-excursion
+      (goto-char 0)
+      (funcall set-field field value))))
 
 (defun pelican-mode-remove-field (field)
   "Remove FIELD."
