@@ -38,6 +38,14 @@
 ;;    ancestor is irrelevant.
 ;;  * If the next component is ``pages'', that indicates a page
 ;;    rather than an article.
+;;
+;; To enable by default on all text files in a Pelican site:
+;;
+;;     (require 'pelican-mode)
+;;     (pelican-global-mode)
+;;
+;; Or, register `pelican-mode' or `pelican-mode-enable-if-site'
+;; as hook functions for more direct control.
 
 
 ;;; Code:

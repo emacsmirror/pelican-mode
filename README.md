@@ -15,10 +15,19 @@ something like it. In particular it assumes:
 
 ## Quick Guide
 
+To enable by default on all text files in a Pelican site:
+
+    (require 'pelican-mode)
+    (pelican-global-mode)
+
+Or, register `pelican-mode` or `pelican-mode-enable-if-site`
+as hook functions for more direct control.
+
+* `C-c P f` - Set a metadata field (title, category, etc.)
+* `C-c P h` - Generate HTML output for a site (equivalent to `make html`)
 * `C-c P n` - Insert a post or page header
 * `C-c P p` - Remove draft status from a post (i.e. publish it)
 * `C-c P t` - Update the date field in a post/page header
-* `C-c P h` - Generate HTML output for a site (equivalent to `make html`)
 * `C-c P u` - Upload a site using rsync (equivalent to `make rsync_upload`)
 
 
