@@ -341,22 +341,20 @@ has no status."
 
 (defun pelican-mode-page-p ()
   "Return non-nil the current buffer is a Pelican page."
-  (when-let (pelican-mode-base (pelican-mode-find-root))
-    (let* ((relative (file-relative-name buffer-file-name pelican-mode-base))
-           (components (split-string relative "/")))
-      (equal "pages" (cadr components)))))
+  (string-match-p
+   "^[^/]+/pages/"
+   (file-relative-name
+    (abbreviate-file-name (or (buffer-file-name) (buffer-name)))
+    (pelican-mode-find-root))))
 
 (defun pelican-mode-default-slug ()
-  "Generate a Pelican article/page slug for the current buffer."
-  (if-let ((pelican-mode-base (pelican-mode-find-root))
-           (file-name (file-name-sans-extension buffer-file-name)))
-      (let* ((relative (file-relative-name file-name pelican-mode-base))
-             (components (cdr (split-string relative "/")))
-             (components (if (string= "pages" (car components))
-                             (cdr components) components)))
-        (mapconcat 'identity components "/"))
-    (when-let (file-name (file-name-sans-extension buffer-file-name))
-      (file-name-base file-name))))
+  "Generate a Pelican slug for the current buffer."
+  (file-name-sans-extension
+   (replace-regexp-in-string
+    "^[^/]+/\\(?:pages/\\)?" ""
+    (file-relative-name
+     (abbreviate-file-name (or (buffer-file-name) (buffer-name)))
+     (pelican-mode-find-root)))))
 
 (defun pelican-mode-find-root ()
   "Return the root of the buffer's Pelican site, or nil."
