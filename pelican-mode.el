@@ -3,7 +3,7 @@
 ;; Copyright 2013-2017 Joe Wreschnig
 ;;
 ;; Author: Joe Wreschnig <joe.wreschnig@gmail.com>
-;; Package-Version: 20170730
+;; Package-Version: 20170807
 ;; Package-Requires: ((emacs "25"))
 ;; Keywords: convenience, editing
 ;;
