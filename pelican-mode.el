@@ -24,7 +24,9 @@
 ;;; Commentary:
 ;;
 ;; pelican-mode is an Emacs minor mode for editing pages and posts in
-;; Pelican (URL http://getpelican.com/) sites.
+;; Pelican sites.  Pelican is a static site generator which can
+;; process a variety of text file formats.  For more information, see
+;; URL https://blog.getpelican.com/.
 ;;
 ;; It's intended to be used alongside `markdown-mode' or `rst-mode'.
 ;; It also assumes you've set up Pelican with ``pelican-quickstart''
@@ -44,7 +46,9 @@
 (require 'subr-x)
 
 (defgroup pelican-mode nil
-  "Support for Pelican articles and pages."
+  "Support for Pelican articles and pages.
+
+For more information about Pelican see URL https://blog.getpelican.com/."
   :group 'convenience)
 
 (defcustom pelican-mode-default-page-fields
@@ -236,6 +240,10 @@ With a prefix argument ARG, enable Pelican mode if ARG is
 positive, and disable it otherwise.  If called from Lisp, enable
 the mode if ARG is omitted or nil.
 
+Pelican is a static site generator which can process a variety of
+text file formats.  For more information, see URL
+https://blog.getpelican.com/.
+
 When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
 
@@ -253,6 +261,10 @@ for editing articles or pages:
 With a prefix argument ARG, enable Pelican global mode if ARG is
 positive, and disable it otherwise.  If called from Lisp, enable
 the mode if ARG is omitted or nil.
+
+Pelican is a static site generator which can process a variety of
+text file formats.  For more information, see URL
+https://blog.getpelican.com/.
 
 When Pelican global mode is enabled, text files which seem to
 be part of a Pelican site will have `pelican-mode' automatically
