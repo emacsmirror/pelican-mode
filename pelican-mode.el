@@ -170,7 +170,7 @@ When called from Lisp, VALUE may be any value; except for the
 following special values, the unquoted printed representation of
 it is used:
 
-- `now' means the current time; see `pelican-mode-timestamp'.
+- `now' means the current time.
 
 - `slug' means the file's path relative to the document root sans
   extension; see `pelican-mode-default-slug'.
@@ -181,7 +181,7 @@ The buffer must be in a format listed in `pelican-mode-formats'
 for this function to work correctly."
   (interactive "sField: \nsValue: ")
   (setq value (pcase value
-                ('now (pelican-mode-timestamp))
+                ('now (format-time-string "%Y-%m-%d %H:%M"))
                 ('slug (pelican-mode-default-slug))
                 ('"" nil)
                 (_ value)))
@@ -265,10 +265,6 @@ has no status."
   (pelican-make "rsync_upload"))
 
 
-
-(defun pelican-mode-timestamp (&optional time)
-  "Generate a pelican-mode-compatible timestamp for TIME."
-  (format-time-string "%Y-%m-%d %H:%M" time))
 
 (defun pelican-mode-set-fields (&rest fields)
   "Insert a Pelican header for an article with metadata FIELDS."
