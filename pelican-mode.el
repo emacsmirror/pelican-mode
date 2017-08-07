@@ -57,7 +57,7 @@ For more information about Pelican see URL https://blog.getpelican.com/."
 
 See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
-  :group 'pelican
+  :group 'pelican-mode
   :type '(plist))
 
 (defcustom pelican-mode-default-article-fields
@@ -66,17 +66,18 @@ about metadata fields and special values."
 
 See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
-  :group 'pelican
+  :group 'pelican-mode
   :type '(plist))
 
-(defcustom pelican-mode-set-field-alist
+(defcustom pelican-mode-formats
   '((markdown-mode . pelican-mode-set-field-markdown-mode)
+    (adoc-mode . pelican-mode-set-field-adoc-mode)
     (rst-mode . pelican-mode-set-field-rst-mode))
   "Functions to handle setting metadata, based on major mode.
 
 This association list maps modes to functions that take two
 arguments, field and value strings."
-  :group 'pelican
+  :group 'pelican-mode
   :type '(alist :key-type function :value-type function))
 
 (defun pelican-mode-timestamp (&optional time)
@@ -121,8 +122,8 @@ arguments, field and value strings."
             (replace-match header)
           (insert header)))
     (let ((text (when value (format ":%s: %s\n" field value))))
-      (when (re-search-forward "^#" nil t)
-        (forward-line 2))
+      (when (looking-at "^.*\n#")
+        (forward-line 3))
       (if (re-search-forward (format "^:%s:.*\n" (regexp-quote field)) nil t)
           (replace-match (or text ""))
         (when text
@@ -140,6 +141,24 @@ arguments, field and value strings."
         (if (re-search-forward "^$" nil t)
             (replace-match text)
           (insert text))))))
+
+(defun pelican-mode-set-field-adoc-mode (field value)
+  "Set AsciiDoc metadata FIELD to VALUE."
+  (setq field (downcase field))
+  (if (equal field "title")
+      (let ((header (format "= %s\n\n" value)))
+        (if (looking-at "= .*\n\n+")
+            (replace-match header)
+          (insert header)))
+    (let ((text (when value (format ":%s: %s\n" field value))))
+      (when (looking-at "^=")
+        (forward-line 2))
+      (if (re-search-forward (format "^:%s:.*\n" (regexp-quote field)) nil t)
+          (replace-match (or text ""))
+        (when text
+          (if (re-search-forward "^$" nil t)
+              (replace-match text)
+            (insert text)))))))
 
 (defun pelican-mode-set-field (field value)
   "Set FIELD to VALUE.
@@ -165,7 +184,7 @@ the unquoted printed representation of it is used:
   (when (symbolp field)
     (setq field (string-remove-prefix ":" (symbol-name field))))
   (let ((set-field
-         (assoc-default nil pelican-mode-set-field-alist #'derived-mode-p)))
+         (assoc-default nil pelican-mode-formats #'derived-mode-p)))
     (unless set-field
       (error "Unsupported major mode %S" major-mode))
     (save-excursion
@@ -274,7 +293,7 @@ If you disable this, you may still enable `pelican-mode' manually
 or add `pelican-mode-enable-if-site' to more specific mode
 hooks."
   :global t
-  :group 'pelican
+  :group 'pelican-mode
   (if pelican-global-mode
       (add-hook 'text-mode-hook #'pelican-mode-enable-if-site)
     (remove-hook 'text-mode-hook #'pelican-mode-enable-if-site)))
