@@ -1,0 +1,5 @@
+* org-mode support
+  Pelican has an official org_reader plugin:
+  https://github.com/getpelican/pelican-plugins/tree/master/org_reader
+
+  But ~org-mode~ doesn’t have any API to set global properties?
