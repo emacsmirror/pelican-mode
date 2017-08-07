@@ -111,8 +111,9 @@ arguments, field and value strings."
       (if (re-search-forward (format "^:%s:.*\n" (regexp-quote field)) nil t)
           (replace-match (or text ""))
         (when text
-          (re-search-forward "^$")
-          (replace-match text))))))
+          (if (re-search-forward "^$" nil t)
+              (replace-match text)
+            (insert text)))))))
 
 (defun pelican-mode-set-field-markdown-mode (field value)
   "Set Markdown metadata FIELD to VALUE."
@@ -121,8 +122,9 @@ arguments, field and value strings."
     (if (re-search-forward (format "^%s:.*\n" (regexp-quote field)) nil t)
         (replace-match text)
       (when value
-        (re-search-forward "^$")
-        (replace-match  text)))))
+        (if (re-search-forward "^$" nil t)
+            (replace-match text)
+          (insert text))))))
 
 (defun pelican-mode-set-field (field value)
   "Set FIELD to VALUE.
@@ -191,11 +193,8 @@ the unquoted printed representation of it is used:
              (components (if (string= "pages" (car components))
                              (cdr components) components)))
         (mapconcat 'identity components "/"))
-    (format "%s/%s"
-            (file-name-nondirectory
-             (directory-file-name
-              (file-name-directory file-name)))
-            (file-name-base file-name))))
+    (when-let (file-name (file-name-sans-extension buffer-file-name))
+      (file-name-base file-name))))
 
 (defun pelican-mode-find-in-parents (file-name)
   "Find FILE-NAME in the default directory or one of its parents, or nil."
@@ -217,7 +216,7 @@ the unquoted printed representation of it is used:
   (if-let (default-directory (pelican-mode-find-root))
       (compilation-start (format "make %s" target)
                          nil (lambda (_) "*pelican*"))
-    (user-error "This doesn't look like a Pelican site")))
+    (user-error "No Pelican site root could be found")))
 
 (defun pelican-make-html ()
   "Generate HTML via a Makefile at the root of the site."
