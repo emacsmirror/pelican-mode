@@ -29,9 +29,11 @@
 ;; process a variety of text file formats.  For more information, see
 ;; URL https://blog.getpelican.com/.
 ;;
-;; It's intended to be used alongside `markdown-mode' or `rst-mode'.
-;; It also assumes you've set up Pelican with ``pelican-quickstart''
-;; or something like it.  In particular it assumes:
+;; It's intended to be used alongside a major mode for the Pelican
+;; document.  Currently supported formats are Markdown,
+;; reStructuredText, AsciiDoc, and Org.  It also assumes you've set up
+;; Pelican with ``pelican-quickstart'' or something like it.  In
+;; particular it expects:
 ;;
 ;;  * The existence of ``pelicanconf.py'' and ``Makefile'' in some
 ;;    ancestor directory.
