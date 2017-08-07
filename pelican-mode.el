@@ -298,6 +298,9 @@ Pelican is a static site generator which can process a variety of
 text file formats.  For more information, see URL
 https://blog.getpelican.com/.
 
+Rather than manually enabling this mode, you may wish to use
+`pelican-global-mode' or `pelican-mode-enable-if-site'.
+
 When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
 
