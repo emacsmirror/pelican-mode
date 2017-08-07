@@ -20,11 +20,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 ;;
-;; Probably, this doesn't handle a lot of error cases.  I also never
-;; tested it on networked drives and the lookup for pelicanconf.py
-;; might slow it down considerably.
+;; pelican-mode is an Emacs minor mode for editing pages and posts in
+;; Pelican (URL http://getpelican.com/) sites.
+;;
+;; It's intended to be used alongside `markdown-mode' or `rst-mode'.
+;; It also assumes you've set up Pelican with ``pelican-quickstart''
+;; or something like it.  In particular it assumes:
+;;
+;;  * The existence of ``pelicanconf.py'' and ``Makefile'' in some
+;;    ancestor directory.
+;;  * The first component of the path (e.g. ``content'') after that
+;;    ancestor is irrelevant.
+;;  * If the next component is ``pages'', that indicates a page
+;;    rather than an article.
 
 
 ;;; Code:
