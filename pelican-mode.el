@@ -5,6 +5,7 @@
 ;; Author: Joe Wreschnig <joe.wreschnig@gmail.com>
 ;; Package-Version: 20170807
 ;; Package-Requires: ((emacs "25"))
+;; URL: https://git.korewanetadesu.com/pelican-mode.git
 ;; Keywords: convenience, editing
 ;;
 ;; This program is free software; you can redistribute it and/or modify
