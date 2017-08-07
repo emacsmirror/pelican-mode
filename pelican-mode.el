@@ -93,7 +93,7 @@ arguments, field and value strings."
   "Generate a pelican-mode-compatible timestamp for TIME."
   (format-time-string "%Y-%m-%d %H:%M" time))
 
-(defun pelican-mode-insert-header (&rest fields)
+(defun pelican-mode-set-fields (&rest fields)
   "Insert a Pelican header for an article with metadata FIELDS."
   (mapc (apply-partially #'apply #'pelican-mode-set-field)
         (seq-partition fields 2)))
@@ -101,19 +101,23 @@ arguments, field and value strings."
 (defun pelican-mode-insert-draft-article-header (title tags)
   "Insert a Pelican header for a draft with a TITLE and TAGS."
   (interactive "sArticle title: \nsTags: ")
-  (apply #'pelican-mode-insert-header
-         `(:title ,title ,@pelican-mode-default-article-fields :tags ,tags)))
+  (apply #'pelican-mode-set-fields
+         `(:title ,title
+           ,@pelican-mode-default-article-fields
+           :tags ,tags)))
 
 (defun pelican-mode-insert-page-header (title &optional hidden)
-  "Insert a Pelican header for a page with a TITLE, potentially HIDDEN."
-  (interactive
-   (list (read-string "Page title: ")
-         (y-or-n-p "Hidden? ")))
-  (apply #'pelican-mode-insert-header
-         `(:title ,title ,@pelican-mode-default-page-fields
-                  :hidden ,(when hidden "hidden"))))
+  "Insert a Pelican header for a page with a TITLE.
 
-(defun pelican-mode-insert-auto-header ()
+If HIDDEN is non-nil, the page is marked hidden; otherwise it
+has no status."
+  (interactive "sPage title: \nP")
+  (apply #'pelican-mode-set-fields
+         (append
+          (list :title title :status (when hidden "hidden"))
+          pelican-mode-default-page-fields)))
+
+(defun pelican-mode-insert-header ()
   "Insert a Pelican header for a page or article."
   (interactive)
   (call-interactively
@@ -299,11 +303,11 @@ for editing articles or pages:
 
 \\{pelican-mode-map}"
   :lighter " Pelican"
-  :keymap `((,(kbd "C-c P n") . pelican-mode-insert-auto-header)
+  :keymap `((,(kbd "C-c P f") . pelican-set-field)
+            (,(kbd "C-c P h") . pelican-make-html)
+            (,(kbd "C-c P n") . pelican-mode-insert-header)
             (,(kbd "C-c P p") . pelican-mode-publish-draft)
             (,(kbd "C-c P t") . pelican-mode-update-date)
-            (,(kbd "C-c P h") . pelican-make-html)
-            (,(kbd "C-c P f") . pelican-set-field)
             (,(kbd "C-c P u") . pelican-make-rsync-upload)))
 
 ;;;###autoload
