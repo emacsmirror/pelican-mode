@@ -207,19 +207,9 @@ the unquoted printed representation of it is used:
     (when-let (file-name (file-name-sans-extension buffer-file-name))
       (file-name-base file-name))))
 
-(defun pelican-mode-find-in-parents (file-name)
-  "Find FILE-NAME in the default directory or one of its parents, or nil."
-  (let* ((parent (expand-file-name default-directory)))
-    (while (and (not (file-readable-p (concat parent file-name)))
-                (not (string= parent (directory-file-name parent))))
-      (setq parent (file-name-directory (directory-file-name parent))))
-    (let ((found (concat parent file-name)))
-      (if (file-readable-p found) found nil))))
-
 (defun pelican-mode-find-root ()
   "Return the root of the buffer's Pelican site, or nil."
-  (when-let (conf (pelican-mode-find-in-parents "pelicanconf.py"))
-    (file-name-directory conf)))
+  (locate-dominating-file default-directory "pelicanconf.py"))
 
 (defun pelican-make (target)
   "Execute TARGET in a Makefile at the root of the site."
