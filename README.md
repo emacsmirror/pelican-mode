@@ -1,4 +1,4 @@
-pelican-mode is an Emacs minor mode for editing pages and posts in
+pelican-mode is an Emacs minor mode for editing articles and pages in
 [Pelican][] sites.
 
 It's intended to be used alongside a major mode for the Pelican

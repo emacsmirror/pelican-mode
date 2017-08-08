@@ -25,8 +25,8 @@
 
 ;;; Commentary:
 ;;
-;; pelican-mode is an Emacs minor mode for editing pages and posts in
-;; Pelican sites.  Pelican is a static site generator which can
+;; pelican-mode is an Emacs minor mode for editing articles and pages
+;; in Pelican sites.  Pelican is a static site generator which can
 ;; process a variety of text file formats.  For more information, see
 ;; URL https://blog.getpelican.com/.
 ;;
