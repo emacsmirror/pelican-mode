@@ -58,7 +58,71 @@
 (require 'seq)
 (require 'subr-x)
 
+;; Customizations
+
+(defgroup pelican-mode nil
+  "Support for Pelican articles and pages.
+
+For more information about Pelican see URL https://blog.getpelican.com/."
+  :group 'convenience)
+
+(defcustom pelican-mode-keymap-prefix (kbd "C-c P")
+  "Pelican mode keymap prefix."
+  :group 'pelican-mode
+  :type 'string)
+
+(defcustom pelican-mode-default-page-fields
+  '(:slug slug)
+  "Fields to include when creating a new page.
+
+See the documentation for `pelican-mode-set-field' for more information
+about metadata fields and special values."
+  :group 'pelican-mode
+  :type '(plist))
+
+(defcustom pelican-mode-default-article-fields
+  '(:date now :status "draft" :slug slug)
+  "Fields to include when creating a new article.
+
+See the documentation for `pelican-mode-set-field' for more information
+about metadata fields and special values."
+  :group 'pelican-mode
+  :type '(plist))
+
+(defcustom pelican-mode-formats
+  '((adoc-mode . pelican-mode-set-field-adoc-mode)
+    (markdown-mode . pelican-mode-set-field-markdown-mode)
+    (org-mode . pelican-mode-set-field-org-mode)
+    (rst-mode . pelican-mode-set-field-rst-mode))
+  "Functions to handle setting metadata, based on major mode.
+
+This association list maps modes to functions that take two
+arguments, field and value strings."
+  :group 'pelican-mode
+  :type '(alist :key-type function :value-type function))
+
+
+
 ;; Mode Definition
+
+(defvar pelican-mode-command-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "d") #'pelican-mode-update-date)
+    (define-key map (kbd "f") #'pelican-mode-set-field)
+    (define-key map (kbd "h") #'pelican-make-html)
+    (define-key map (kbd "n") #'pelican-mode-insert-header)
+    (define-key map (kbd "p") #'pelican-mode-publish)
+    (define-key map (kbd "u") #'pelican-make-rsync-upload)
+    map)
+  "Keymap for Pelican commands after `pelican-mode-keymap-prefix'.")
+(fset 'pelican-mode-command-map pelican-mode-command-map)
+
+(defvar pelican-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map pelican-mode-keymap-prefix
+      'pelican-mode-command-map)
+    map)
+  "Keymap for Pelican mode.")
 
 ;;;###autoload
 (define-minor-mode pelican-mode
@@ -78,13 +142,8 @@ When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
 
 \\{pelican-mode-map}"
-  :lighter " Pelican"
-  :keymap `((,(kbd "C-c P d") . pelican-mode-update-date)
-            (,(kbd "C-c P f") . pelican-set-field)
-            (,(kbd "C-c P h") . pelican-make-html)
-            (,(kbd "C-c P n") . pelican-mode-insert-header)
-            (,(kbd "C-c P p") . pelican-mode-publish)
-            (,(kbd "C-c P u") . pelican-make-rsync-upload)))
+  :keymap pelican-mode-map
+  :lighter " Pelican")
 
 ;;;###autoload
 (define-minor-mode pelican-global-mode
@@ -118,46 +177,6 @@ Pelican sites are detected by looking for a file named `pelicanconf.py'
 in an ancestor directory."
   (when (pelican-mode-find-root)
     (pelican-mode)))
-
-
-
-;; Customizations
-
-(defgroup pelican-mode nil
-  "Support for Pelican articles and pages.
-
-For more information about Pelican see URL https://blog.getpelican.com/."
-  :group 'convenience)
-
-(defcustom pelican-mode-default-page-fields
-  '(:slug slug)
-  "Fields to include when creating a new page.
-
-See the documentation for `pelican-mode-set-field' for more information
-about metadata fields and special values."
-  :group 'pelican-mode
-  :type '(plist))
-
-(defcustom pelican-mode-default-article-fields
-  '(:date now :status "draft" :slug slug)
-  "Fields to include when creating a new article.
-
-See the documentation for `pelican-mode-set-field' for more information
-about metadata fields and special values."
-  :group 'pelican-mode
-  :type '(plist))
-
-(defcustom pelican-mode-formats
-  '((adoc-mode . pelican-mode-set-field-adoc-mode)
-    (markdown-mode . pelican-mode-set-field-markdown-mode)
-    (org-mode . pelican-mode-set-field-org-mode)
-    (rst-mode . pelican-mode-set-field-rst-mode))
-  "Functions to handle setting metadata, based on major mode.
-
-This association list maps modes to functions that take two
-arguments, field and value strings."
-  :group 'pelican-mode
-  :type '(alist :key-type function :value-type function))
 
 
 
