@@ -3,7 +3,7 @@
 ;; Copyright 2013-2017 Joe Wreschnig
 ;;
 ;; Author: Joe Wreschnig <joe.wreschnig@gmail.com>
-;; Package-Version: 20170807
+;; Package-Version: 20170808
 ;; Package-Requires: ((emacs "25"))
 ;; URL: https://git.korewanetadesu.com/pelican-mode.git
 ;; Keywords: convenience, editing
@@ -142,32 +142,18 @@ When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
 
 \\{pelican-mode-map}"
+  :group 'pelican-mode
+  :require 'pelican-mode
   :keymap pelican-mode-map
   :lighter " Pelican")
 
 ;;;###autoload
-(define-minor-mode pelican-global-mode
-  "Toggle Pelican global mode.
-With a prefix argument ARG, enable Pelican global mode if ARG is
-positive, and disable it otherwise.  If called from Lisp, enable
-the mode if ARG is omitted or nil.
-
-Pelican is a static site generator which can process a variety of
-text file formats.  For more information, see URL
-https://blog.getpelican.com/.
-
-When Pelican global mode is enabled, text files which seem to
-be part of a Pelican site will have `pelican-mode' automatically
-enabled.
-
-If you disable this, you may still enable `pelican-mode' manually
-or add `pelican-mode-enable-if-site' to more specific mode
-hooks."
-  :global t
+(define-globalized-minor-mode pelican-global-mode pelican-mode
+  (lambda ()
+    (when (derived-mode-p #'text-mode)
+      (pelican-mode-enable-if-site)))
   :group 'pelican-mode
-  (if pelican-global-mode
-      (add-hook 'text-mode-hook #'pelican-mode-enable-if-site)
-    (remove-hook 'text-mode-hook #'pelican-mode-enable-if-site)))
+  :require 'pelican-mode)
 
 ;;;###autoload
 (defun pelican-mode-enable-if-site ()
