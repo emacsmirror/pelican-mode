@@ -60,7 +60,7 @@
 
 ;; Customizations
 
-(defgroup pelican-mode nil
+(defgroup pelican nil
   "Support for Pelican articles and pages.
 
 For more information about Pelican see URL https://blog.getpelican.com/."
@@ -68,7 +68,7 @@ For more information about Pelican see URL https://blog.getpelican.com/."
 
 (defcustom pelican-mode-keymap-prefix (kbd "C-c P")
   "Pelican mode keymap prefix."
-  :group 'pelican-mode
+  :group 'pelican
   :type 'string)
 
 (defcustom pelican-mode-default-page-fields
@@ -77,7 +77,7 @@ For more information about Pelican see URL https://blog.getpelican.com/."
 
 See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
-  :group 'pelican-mode
+  :group 'pelican
   :type '(plist))
 
 (defcustom pelican-mode-default-article-fields
@@ -86,7 +86,7 @@ about metadata fields and special values."
 
 See the documentation for `pelican-mode-set-field' for more information
 about metadata fields and special values."
-  :group 'pelican-mode
+  :group 'pelican
   :type '(plist))
 
 (defcustom pelican-mode-formats
@@ -98,7 +98,7 @@ about metadata fields and special values."
 
 This association list maps modes to functions that take two
 arguments, field and value strings."
-  :group 'pelican-mode
+  :group 'pelican
   :type '(alist :key-type function :value-type function))
 
 
@@ -142,8 +142,7 @@ When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
 
 \\{pelican-mode-map}"
-  :group 'pelican-mode
-  :require 'pelican-mode
+  :group 'pelican
   :keymap pelican-mode-map
   :lighter " Pelican")
 
@@ -152,7 +151,7 @@ for editing articles or pages:
   (lambda ()
     (when (derived-mode-p #'text-mode)
       (pelican-mode-enable-if-site)))
-  :group 'pelican-mode
+  :group 'pelican
   :require 'pelican-mode)
 
 ;;;###autoload
