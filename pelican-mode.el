@@ -48,6 +48,13 @@
 ;;     (require 'pelican-mode)
 ;;     (pelican-global-mode)
 ;;
+;; Or with ``use-package'' and deferred loading:
+;;
+;;     (use-package pelican-mode
+;;       :after (:any org rst markdown-mode adoc-mode)
+;;       :config
+;;       (pelican-global-mode))
+;;
 ;; Or, register `pelican-mode' or `pelican-mode-enable-if-site'
 ;; as hook functions for more direct control.
 
