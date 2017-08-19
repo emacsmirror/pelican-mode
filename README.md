@@ -18,15 +18,20 @@ AsciiDoc, and Org. It also assumes you've set up Pelican with
 
 To enable by default on all text files in a Pelican site:
 
-    (require 'pelican-mode)
-    (pelican-global-mode)
+``` emacs-lisp
+(require 'pelican-mode)
+(pelican-global-mode)
+```
+
 
 Or with `use-package` and deferred loading:
 
-    (use-package pelican-mode
-      :after (:any org rst markdown-mode adoc-mode)
-      :config
-      (pelican-global-mode))
+``` emacs-lisp
+(use-package pelican-mode
+  :after (:any org rst markdown-mode adoc-mode)
+  :config
+  (pelican-global-mode))
+```
 
 Or, register `pelican-mode` or `pelican-mode-enable-if-site`
 as hook functions for more direct control.
