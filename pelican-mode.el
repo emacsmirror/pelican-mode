@@ -30,17 +30,17 @@
 ;; process a variety of text file formats.  For more information, see
 ;; URL https://blog.getpelican.com/.
 ;;
-;; It's intended to be used alongside a major mode for the Pelican
+;; It’s intended to be used alongside a major mode for the Pelican
 ;; document.  Currently supported formats are Markdown,
-;; reStructuredText, AsciiDoc, and Org.  It also assumes you've set up
-;; Pelican with ``pelican-quickstart'' or something like it.  In
+;; reStructuredText, AsciiDoc, and Org.  It also assumes you’ve set up
+;; Pelican with “pelican-quickstart” or something like it.  In
 ;; particular it expects:
 ;;
-;;  * The existence of ``pelicanconf.py'' and ``Makefile'' in some
+;;  * The existence of “pelicanconf.py” and “Makefile” in some
 ;;    ancestor directory.
-;;  * The first component of the path (e.g. ``content'') after that
+;;  * The first component of the path (e.g. “content”) after that
 ;;    ancestor is irrelevant.
-;;  * If the next component is ``pages'', that indicates a page
+;;  * If the next component is “pages”, that indicates a page
 ;;    rather than an article.
 ;;
 ;; To enable by default on all text files in a Pelican site:
@@ -48,14 +48,14 @@
 ;;     (require 'pelican-mode)
 ;;     (pelican-global-mode)
 ;;
-;; Or with ``use-package'' and deferred loading:
+;; Or with ‘use-package’ and deferred loading:
 ;;
 ;;     (use-package pelican-mode
 ;;       :after (:any org rst markdown-mode adoc-mode)
 ;;       :config
 ;;       (pelican-global-mode))
 ;;
-;; Or, register `pelican-mode' or `pelican-mode-enable-if-site'
+;; Or, register ‘pelican-mode’ or ‘pelican-mode-enable-if-site’
 ;; as hook functions for more direct control.
 
 
@@ -82,7 +82,7 @@ For more information about Pelican see URL https://blog.getpelican.com/."
   '(:slug slug)
   "Fields to include when creating a new page.
 
-See the documentation for `pelican-mode-set-field' for more information
+See the documentation for ‘pelican-mode-set-field’ for more information
 about metadata fields and special values."
   :group 'pelican
   :type '(plist))
@@ -91,7 +91,7 @@ about metadata fields and special values."
   '(:date now :status "draft" :slug slug)
   "Fields to include when creating a new article.
 
-See the documentation for `pelican-mode-set-field' for more information
+See the documentation for ‘pelican-mode-set-field’ for more information
 about metadata fields and special values."
   :group 'pelican
   :type '(plist))
@@ -121,7 +121,7 @@ arguments, field and value strings."
     (define-key map (kbd "p") #'pelican-mode-publish)
     (define-key map (kbd "u") #'pelican-make-rsync-upload)
     map)
-  "Keymap for Pelican commands after `pelican-mode-keymap-prefix'.")
+  "Keymap for Pelican commands after ‘pelican-mode-keymap-prefix’.")
 (fset 'pelican-mode-command-map pelican-mode-command-map)
 
 (defvar pelican-mode-map
@@ -143,7 +143,7 @@ text file formats.  For more information, see URL
 https://blog.getpelican.com/.
 
 Rather than manually enabling this mode, you may wish to use
-`pelican-global-mode' or `pelican-mode-enable-if-site'.
+‘pelican-global-mode’ or ‘pelican-mode-enable-if-site’.
 
 When Pelican mode is enabled, additional commands are available
 for editing articles or pages:
@@ -163,10 +163,10 @@ for editing articles or pages:
 
 ;;;###autoload
 (defun pelican-mode-enable-if-site ()
-  "Enable `pelican-mode' if this buffer is part of a Pelican site.
+  "Enable ‘pelican-mode’ if this buffer is part of a Pelican site.
 
-Pelican sites are detected by looking for a file named `pelicanconf.py'
-in an ancestor directory."
+Pelican sites are detected by looking for a file named
+“pelicanconf.py” in an ancestor directory."
   (when (pelican-mode-find-root)
     (pelican-mode)))
 
@@ -178,20 +178,20 @@ in an ancestor directory."
   "Set FIELD to VALUE.
 
 FIELD may be a string or a symbol; if it is a symbol, the
-symbol name is used (removing a leading ':' if present).
+symbol name is used (removing a leading “:” if present).
 
 When called from Lisp, VALUE may be any value; except for the
 following special values, the unquoted printed representation of
 it is used:
 
-- `now' means the current time.
+- ‘now’ means the current time.
 
-- `slug' means the file's path relative to the document root sans
-  extension; see `pelican-mode-default-slug'.
+- ‘slug’ means the file’s path relative to the document root sans
+  extension; see ‘pelican-mode-default-slug’.
 
 - nil or an empty string removes the field.
 
-The buffer must be in a format listed in `pelican-mode-formats'
+The buffer must be in a format listed in ‘pelican-mode-formats’
 for this function to work correctly."
   (interactive "sField: \nsValue: ")
   (setq value (pcase value
@@ -220,7 +220,7 @@ for this function to work correctly."
   (pelican-mode-set-field :title title))
 
 (defun pelican-mode-update-date (&optional original)
-  "Update the document's modification date.
+  "Update the document’s modification date.
 
 If ORIGINAL is non-nil, the publication date is updated rather
 than the modification date."
@@ -341,7 +341,7 @@ has no status."
 
 (defun pelican-mode-set-field-org-mode (field value)
   "Set Org global metadata FIELD to VALUE."
-  ;; None of org-mode's functions I can find for setting properties
+  ;; None of org-mode’s functions I can find for setting properties
   ;; operate on the global list, only a single property drawer.
   (setq field (upcase field))
   (setq field
@@ -375,7 +375,7 @@ has no status."
      (pelican-mode-find-root)))))
 
 (defun pelican-mode-find-root ()
-  "Return the root of the buffer's Pelican site, or nil."
+  "Return the root of the buffer’s Pelican site, or nil."
   (locate-dominating-file default-directory "pelicanconf.py"))
 
 (provide 'pelican-mode)

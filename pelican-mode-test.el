@@ -21,8 +21,8 @@
 
 ;;; Commentary:
 ;;
-;; This file contains test cases for pelican-mode.  Unless you're
-;; hacking on it you shouldn't need to edit or run this file.
+;; This file contains test cases for pelican-mode.  Unless you’re
+;; hacking on it you shouldn’t need to edit or run this file.
 
 
 
