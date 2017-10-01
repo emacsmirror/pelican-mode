@@ -380,9 +380,3 @@ has no status."
 
 (provide 'pelican-mode)
 ;;; pelican-mode.el ends here
-
-
-
-;; Local Variables:
-;; sentence-end-double-space: t
-;; End:
