@@ -73,7 +73,7 @@
 For more information about Pelican see URL https://blog.getpelican.com/."
   :group 'convenience)
 
-(defcustom pelican-mode-keymap-prefix (kbd "C-c P")
+(defcustom pelican-mode-keymap-prefix (kbd "C-c =")
   "Pelican mode keymap prefix."
   :group 'pelican
   :type 'string)
