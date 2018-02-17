@@ -51,7 +51,7 @@
 ;; Or with ‘use-package’ and deferred loading:
 ;;
 ;;     (use-package pelican-mode
-;;       :after (:any org rst markdown-mode adoc-mode)
+;;       :demand :after (:any org rst markdown-mode adoc-mode)
 ;;       :config
 ;;       (pelican-global-mode))
 ;;
