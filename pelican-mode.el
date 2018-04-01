@@ -269,10 +269,11 @@ has no status."
 (defun pelican-make (target)
   "Execute TARGET in a Makefile at the root of the site."
   (interactive "sMake Pelican target: ")
-  (if-let (default-directory (pelican-mode-find-root))
-      (compilation-start (format "make %s" target)
-                         nil (lambda (_) "*pelican*"))
-    (user-error "No Pelican site root could be found")))
+  (let ((default-directory (pelican-mode-find-root)))
+    (if default-directory
+        (compilation-start (format "make %s" target)
+                           nil (lambda (_) "*pelican*"))
+      (user-error "No Pelican site root could be found"))))
 
 (defun pelican-make-html ()
   "Generate HTML via a Makefile at the root of the site."
