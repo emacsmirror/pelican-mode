@@ -42,6 +42,7 @@ as hook functions for more direct control.
 * `C-c = n` - Insert a post or page header
 * `C-c = p` - Remove draft status from a post (i.e. publish it)
 * `C-c = u` - Upload a site using rsync (equivalent to `make rsync_upload`)
+* `C-c = g` - Upload a site to GitHub Pages (equivalent to `make github`)
 
 
 ## Troubleshooting
